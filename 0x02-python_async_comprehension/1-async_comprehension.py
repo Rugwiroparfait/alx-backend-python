@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Module 1-async_comprehension.
+
+This module provides a coroutine that collects and returns a list of 10
+random numbers generated asynchronously.
+"""
+
 import asyncio
 from typing import List
 
