@@ -30,28 +30,37 @@ class TestAccessNestedMap(unittest.TestCase):
             access_nested_map(nested_map, path)
         self.assertEqual(str(cm.exception), expected_exception)
 
-    @parameterized.expand([
-        ("http://example.com", {"payload": True}),
-        ("http://holberton.io", {"payload": False}),
-    ])
+
+class TestGetJson(unittest.TestCase):
+    """Test the get_json function in utils."""
+
     @patch('utils.requests.get')
-    def test_get_json(self, test_url, test_payload, mock_get):
-        """Test get_json returns the expected payload."""
-        # Creating a mock response object with
-        mock_response = Mock()
-        mock_response.json.return_value = test_payload
+    def test_get_json(self, mock_get):
+        """Test get_json returns expected result and was called correctly."""
+        # Define test cases
+        test_cases = [
+            ("http://example.com", {"payload": True}),
+            ("http://holberton.io", {"payload": False}),
+        ]
 
-        # Set the mock   get() to return the mock response
-        mock_get.return_value = mock_response
+        for test_url, test_payload in test_cases:
+            # Create a Mock object with a json method
+            # Returns test_payload
+            mock_response = Mock()
+            mock_response.json.return_value = test_payload
+            mock_get.return_value = mock_response
 
-        # Call the function with the test_url
-        result = get_json(test_url)
+            # Call the function being tested
+            result = get_json(test_url)
 
-        # Call the function with the test_url
-        mock_get.assert_called_once_with(test_url)
+            # check that requests.get was called with the correct URL
+            mock_get.assert_called_once_with(test_url)
 
-        # Check that the returned value is the expected payload
-        self.assertEqual(result, test_payload)
+            # check if output is as expected
+            self.assertEqual(result, test_payload)
+
+            # Reset mock for the next test_payload
+            mock_get.reset_mock()
 
 
 if __name__ == "__main__":
