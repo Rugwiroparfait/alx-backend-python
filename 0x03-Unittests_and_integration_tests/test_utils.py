@@ -2,6 +2,7 @@
 """Unit tests for utils functions."""
 import unittest
 from unittest.mock import patch, Mock
+from client import GithubOrgClient
 from parameterized import parameterized
 from utils import access_nested_map, get_json, memoize
 
@@ -89,6 +90,33 @@ class TestMemoize(unittest.TestCase):
         # Ensure a_method was called only once
         mock_method.assert_called_once()
 
+
+class TestGithubOrg(unittest.TestCase):
+    """Test cases for GithubOrgClient."""
+    
+    @parameterized.expand([
+        ("google",),
+        ("abc",)
+    ])
+    @patch('client.get_json')
+    def test_org(self, org_name, mock_get_json):
+        """Test that GithubOrgClient.org returns the correct value. """
+        # Arrange: mock the return value for get_json
+        mock_get_json.return_value = {"login": org_name}
+        
+        
+        # Act: create an instance of GithubOrgClient /
+        # and call the org method
+        client = GithubOrgClient(org_name)
+        result = client.org
+        
+        # Assert: verify get_json was called once with the /
+        # correct URL
+        mock_get_json.assert_called_once_with(f"https://api.github.com/orgs/{org_name}")
+        
+        # Assert: check that the result matches the mocked/
+        # return value
+        self.assertEqual(result, {"login": org_name})
 
 if __name__ == "__main__":
     unittest.main()
